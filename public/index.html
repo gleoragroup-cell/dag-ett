@@ -155,6 +155,19 @@
       <p class="lead">Nothing sensitive — no documents, no personal numbers. Just enough to build your plan around the real dependency chain.</p>
 
       <div class="field-group">
+        <span class="field-label">Preferred language</span>
+        <div class="choice-row" data-group="language">
+          <button type="button" class="choice" data-value="English">English</button>
+          <button type="button" class="choice" data-value="Svenska">Svenska</button>
+          <button type="button" class="choice" data-value="العربية">العربية</button>
+          <button type="button" class="choice" data-value="Українська">Українська</button>
+          <button type="button" class="choice" data-value="Español">Español</button>
+          <button type="button" class="choice" data-value="Русский">Русский</button>
+        </div>
+        <input type="text" id="language-other-input" placeholder="Or type another language (e.g. Tigrinya, Farsi, Hindi)" style="margin-top:10px;">
+      </div>
+
+      <div class="field-group">
         <span class="field-label">Your citizenship status</span>
         <div class="choice-row" data-group="citizenship">
           <button type="button" class="choice" data-value="EU/EEA citizen">EU/EEA citizen</button>
@@ -216,7 +229,7 @@
 
 <script>
 (function(){
-  const state = { citizenship:null, purpose:null, city:'', plan:null, chatHistory:[] };
+  const state = { citizenship:null, purpose:null, city:'', language:'English', plan:null, chatHistory:[] };
 
   const ACCESS_KEY = 'dagett_access';
 
@@ -293,7 +306,24 @@
       row.querySelectorAll('.choice').forEach(c=>c.classList.remove('selected'));
       choice.classList.add('selected');
       state[group] = choice.dataset.value;
+      if(group === 'language'){
+        document.getElementById('language-other-input').value = '';
+      }
     });
+  });
+
+  const defaultLangBtn = document.querySelector('.choice-row[data-group="language"] .choice[data-value="English"]');
+  if(defaultLangBtn) defaultLangBtn.classList.add('selected');
+
+  document.getElementById('language-other-input').addEventListener('input', (e)=>{
+    const val = e.target.value.trim();
+    if(val){
+      state.language = val;
+      document.querySelectorAll('.choice-row[data-group="language"] .choice').forEach(c=>c.classList.remove('selected'));
+    } else {
+      state.language = 'English';
+      if(defaultLangBtn) defaultLangBtn.classList.add('selected');
+    }
   });
 
   document.getElementById('city-input').addEventListener('input', (e)=>{
@@ -345,7 +375,8 @@
       const parsed = await callBackend('/api/generate-plan', {
         citizenship: state.citizenship,
         purpose: state.purpose,
-        city: state.city
+        city: state.city,
+        language: state.language
       });
       state.plan = parsed;
       renderPlan(parsed);
@@ -414,7 +445,7 @@
 
   function seedChat(){
     state.chatHistory = [];
-    addMessage('assistant', "Your plan is ready above. Ask me anything about any step — forms, what to bring, or how the process works in " + state.city + ".");
+    addMessage('assistant', "Your plan is ready above. Ask me anything about any step — forms, what to bring, or how the process works in " + state.city + ". (Responses will be in " + state.language + ".)");
   }
 
   function addMessage(role, content, isLoading){
@@ -440,6 +471,7 @@
           citizenship: state.citizenship,
           purpose: state.purpose,
           city: state.city,
+          language: state.language,
           planIntro: state.plan ? state.plan.intro : ''
         },
         history: state.chatHistory
