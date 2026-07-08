@@ -48,7 +48,8 @@
   .choice{
     border:1px solid var(--line-dark); background:var(--bg-panel-2); color:var(--paper-ink-soft);
     padding:10px 16px; border-radius:20px; font-size:13.5px; cursor:pointer; transition:all .15s ease;
-    user-select:none;
+    user-select:none; font-family:inherit; -webkit-appearance:none; appearance:none; outline:none;
+    -webkit-tap-highlight-color:transparent; margin:0;
   }
   .choice:hover{border-color:var(--gold-soft);}
   .choice.selected{background:var(--gold); border-color:var(--gold); color:var(--bg); font-weight:600;}
@@ -142,19 +143,19 @@
       <div class="field-group">
         <span class="field-label">Your citizenship status</span>
         <div class="choice-row" data-group="citizenship">
-          <div class="choice" data-value="EU/EEA citizen">EU/EEA citizen</div>
-          <div class="choice" data-value="Nordic citizen">Nordic citizen</div>
-          <div class="choice" data-value="Non-EU citizen">Non-EU citizen</div>
+          <button type="button" class="choice" data-value="EU/EEA citizen">EU/EEA citizen</button>
+          <button type="button" class="choice" data-value="Nordic citizen">Nordic citizen</button>
+          <button type="button" class="choice" data-value="Non-EU citizen">Non-EU citizen</button>
         </div>
       </div>
 
       <div class="field-group">
         <span class="field-label">Why you're moving</span>
         <div class="choice-row" data-group="purpose">
-          <div class="choice" data-value="Work / employment">Work / employment</div>
-          <div class="choice" data-value="Study">Study</div>
-          <div class="choice" data-value="Family reunification">Family reunification</div>
-          <div class="choice" data-value="Starting a business">Starting a business</div>
+          <button type="button" class="choice" data-value="Work / employment">Work / employment</button>
+          <button type="button" class="choice" data-value="Study">Study</button>
+          <button type="button" class="choice" data-value="Family reunification">Family reunification</button>
+          <button type="button" class="choice" data-value="Starting a business">Starting a business</button>
         </div>
       </div>
 
@@ -281,4 +282,101 @@
   });
 
   function renderPlan(plan){
-    document.getElementById('plan
+    document.getElementById('plan-intro-text').textContent = plan.intro || '';
+    const stepsContainer = document.getElementById('plan-steps');
+    stepsContainer.innerHTML = '';
+    (plan.steps || []).forEach(step=>{
+      const card = document.createElement('div');
+      card.className = 'step-card';
+      card.innerHTML = `
+        <div class="step-num">${String(step.order).padStart(2,'0')}</div>
+        <div>
+          <div class="step-title-row">
+            <span class="step-title">${escapeHtml(step.title||'')}</span>
+            <span class="step-time">${escapeHtml(step.timeframe||'')}</span>
+          </div>
+          <p class="step-desc">${escapeHtml(step.description||'')}</p>
+          <div class="step-meta"><b>${escapeHtml(step.authority||'')}</b> ${step.tip ? '· ' + escapeHtml(step.tip) : ''}</div>
+        </div>
+      `;
+      stepsContainer.appendChild(card);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById('download-btn').addEventListener('click', ()=>{
+    if(!state.plan) return;
+    let text = `DAG ETT — YOUR 90-DAY PLAN\n\n${state.plan.intro}\n\n`;
+    state.plan.steps.forEach(s=>{
+      text += `${String(s.order).padStart(2,'0')}. ${s.title} (${s.timeframe})\n${s.description}\nAuthority: ${s.authority}\n${s.tip ? 'Tip: ' + s.tip : ''}\n\n`;
+    });
+    const blob = new Blob([text], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'dag-ett-90-day-plan.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('restart-btn').addEventListener('click', ()=>{
+    location.reload();
+  });
+
+  const chatLog = document.getElementById('chat-log');
+  const chatInput = document.getElementById('chat-input');
+  const chatSendBtn = document.getElementById('chat-send-btn');
+
+  function seedChat(){
+    state.chatHistory = [];
+    addMessage('assistant', "Your plan is ready above. Ask me anything about any step — forms, what to bring, or how the process works in " + state.city + ".");
+  }
+
+  function addMessage(role, content, isLoading){
+    const div = document.createElement('div');
+    div.className = 'msg ' + role + (isLoading ? ' loading' : '');
+    div.textContent = content;
+    chatLog.appendChild(div);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return div;
+  }
+
+  async function sendChat(){
+    const text = chatInput.value.trim();
+    if(!text) return;
+    chatInput.value = '';
+    addMessage('user', text);
+    state.chatHistory.push({role:'user', content:text});
+    const loadingMsg = addMessage('assistant', 'Thinking...', true);
+
+    try{
+      const data = await callBackend('/api/chat', {
+        profile: {
+          citizenship: state.citizenship,
+          purpose: state.purpose,
+          city: state.city,
+          planIntro: state.plan ? state.plan.intro : ''
+        },
+        history: state.chatHistory
+      });
+      loadingMsg.remove();
+      addMessage('assistant', data.reply);
+      state.chatHistory.push({role:'assistant', content:data.reply});
+    } catch(err){
+      console.error(err);
+      loadingMsg.remove();
+      addMessage('assistant', "Sorry, something went wrong. Details: " + (err && err.message ? err.message : String(err)));
+    }
+  }
+
+  chatSendBtn.addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendChat(); });
+})();
+</script>
+
+</body>
+</html>
