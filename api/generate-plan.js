@@ -3,10 +3,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { citizenship, purpose, city } = req.body || {};
+  const { citizenship, purpose, city, language } = req.body || {};
   if (!citizenship || !purpose || !city) {
     return res.status(400).json({ error: 'Missing citizenship, purpose, or city' });
   }
+  const outputLanguage = language && language.trim() ? language.trim() : 'English';
 
   const systemPrompt = `You are Dag Ett, an assistant that creates practical relocation plans for people moving to Sweden. You must respond with ONLY valid JSON, no markdown fences, no preamble, matching exactly this schema:
 {
@@ -22,9 +23,11 @@ export default async function handler(req, res) {
     }
   ]
 }
-Produce 6-9 steps covering the realistic dependency order for this specific person's situation (citizenship status and purpose of move affect the order and requirements a lot - e.g. non-EU citizens need a residence/work permit before most other steps, EU citizens do not). Be accurate about real Swedish processes: personnummer, BankID, opening a bank account, registering with Forsakringskassan, healthcare (region-specific vardcentral registration), tax registration, and any permit-specific steps. Do not invent fake requirements. Keep descriptions concise and practical, not generic filler.`;
+Produce 6-9 steps covering the realistic dependency order for this specific person's situation (citizenship status and purpose of move affect the order and requirements a lot - e.g. non-EU citizens need a residence/work permit before most other steps, EU citizens do not). Be accurate about real Swedish processes: personnummer, BankID, opening a bank account, registering with Forsakringskassan, healthcare (region-specific vardcentral registration), tax registration, and any permit-specific steps. Do not invent fake requirements. Keep descriptions concise and practical, not generic filler.
 
-  const userMessage = `My situation: I am a ${citizenship}, moving to Sweden for ${purpose}, settling in ${city}. Build my personalized 90-day plan.`;
+Write all "intro", "title", "description", and "tip" text in ${outputLanguage}. Keep the "authority" field values in their original Swedish form (e.g. "Skatteverket", "Migrationsverket", "Forsakringskassan") since those are the real names people will encounter, even when the rest of the plan is in ${outputLanguage}.`;
+
+  const userMessage = `My situation: I am a ${citizenship}, moving to Sweden for ${purpose}, settling in ${city}. Build my personalized 90-day plan in ${outputLanguage}.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
