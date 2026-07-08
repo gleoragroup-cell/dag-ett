@@ -134,7 +134,21 @@
     <p class="top-sub">Prototype — your first 90 days in Sweden, in the right order.</p>
   </header>
 
-  <section id="intake-section">
+  <section id="paywall-section">
+    <div class="panel">
+      <div class="eyebrow">Get started</div>
+      <h1 class="display">Choose your plan</h1>
+      <p class="lead">Pay once for your personalized 90-day plan, or add ongoing support if your process runs longer.</p>
+      <div id="paywall-error"></div>
+      <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:22px;">
+        <button class="btn-primary" id="buy-onetime-btn">Get First 90 Days — 299 kr</button>
+        <button class="btn-ghost" id="buy-subscription-btn">Ongoing Support — 59 kr/month</button>
+      </div>
+      <p style="font-size:12.5px; color:var(--paper-ink-soft); opacity:0.7; margin-top:18px;">Test mode — no real charges yet. Use card number 4242 4242 4242 4242, any future date, any CVC.</p>
+    </div>
+  </section>
+
+  <section id="intake-section" style="display:none;">
     <div class="panel">
       <div class="eyebrow">Step 1 of 2</div>
       <h1 class="display">Tell us your situation</h1>
@@ -203,6 +217,73 @@
 <script>
 (function(){
   const state = { citizenship:null, purpose:null, city:'', plan:null, chatHistory:[] };
+
+  const ACCESS_KEY = 'dagett_access';
+
+  function showPaywallError(message){
+    document.getElementById('paywall-error').innerHTML = `<div class="error-box">${message}</div>`;
+  }
+
+  function unlockApp(){
+    document.getElementById('paywall-section').style.display = 'none';
+    document.getElementById('intake-section').style.display = 'block';
+  }
+
+  async function startCheckout(tier){
+    try{
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ tier, origin: window.location.origin })
+      });
+      const data = await res.json();
+      if(!res.ok || !data.url){
+        showPaywallError('Could not start checkout. Details: ' + (data.error || 'unknown error'));
+        return;
+      }
+      window.location.href = data.url;
+    } catch(err){
+      showPaywallError('Network error starting checkout: ' + err.message);
+    }
+  }
+
+  document.getElementById('buy-onetime-btn').addEventListener('click', ()=>startCheckout('onetime'));
+  document.getElementById('buy-subscription-btn').addEventListener('click', ()=>startCheckout('subscription'));
+
+  async function checkAccessOnLoad(){
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    const canceled = params.get('canceled');
+
+    if(localStorage.getItem(ACCESS_KEY) === 'true'){
+      unlockApp();
+      return;
+    }
+
+    if(canceled){
+      showPaywallError('Checkout was canceled — no charge was made. You can try again anytime.');
+      window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+
+    if(sessionId){
+      try{
+        const res = await fetch('/api/verify-payment?session_id=' + encodeURIComponent(sessionId));
+        const data = await res.json();
+        if(res.ok && data.paid){
+          localStorage.setItem(ACCESS_KEY, 'true');
+          unlockApp();
+        } else {
+          showPaywallError('Payment could not be verified yet. If you just paid, wait a moment and refresh.');
+        }
+      } catch(err){
+        showPaywallError('Error verifying payment: ' + err.message);
+      }
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }
+
+  checkAccessOnLoad();
 
   document.querySelectorAll('.choice-row').forEach(row=>{
     row.addEventListener('click', (e)=>{
