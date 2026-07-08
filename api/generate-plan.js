@@ -36,7 +36,7 @@ Produce 6-9 steps covering the realistic dependency order for this specific pers
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
+        max_tokens: 2500,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }]
       })
@@ -50,14 +50,25 @@ Produce 6-9 steps covering the realistic dependency order for this specific pers
     }
 
     const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const cleaned = text.replace(/```json|```/g, '').trim();
+    let cleaned = text.replace(/```json|```/g, '').trim();
 
     let parsed;
     try {
       parsed = JSON.parse(cleaned);
     } catch (e) {
-      console.error('Failed to parse model output as JSON:', text);
-      return res.status(502).json({ error: 'Model did not return valid JSON', raw: text });
+      const firstBrace = cleaned.indexOf('{');
+      const lastBrace = cleaned.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        try {
+          parsed = JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+        } catch (e2) {
+          console.error('Failed to parse model output as JSON (fallback also failed):', text);
+          return res.status(502).json({ error: 'Model did not return valid JSON', raw: text });
+        }
+      } else {
+        console.error('Failed to parse model output as JSON:', text);
+        return res.status(502).json({ error: 'Model did not return valid JSON', raw: text });
+      }
     }
 
     return res.status(200).json(parsed);
