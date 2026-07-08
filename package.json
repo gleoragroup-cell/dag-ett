@@ -2,5 +2,6 @@
   "name": "dag-ett",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Dag Ett - Swedish relocation assistant"
 }
