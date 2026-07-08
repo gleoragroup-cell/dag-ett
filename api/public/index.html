@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dag Ett — Your Swedish relocation assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,680&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10151C; --bg-panel:#171F29; --bg-panel-2:#1D2733;
+    --paper:#EFEAE0; --ink:#1B2027; --ink-soft:#4A5160;
+    --paper-ink:#F2EEE4; --paper-ink-soft:#B9BFC9;
+    --gold:#D9A441; --gold-soft:#F0CD87;
+    --spruce:#3E6259; --spruce-light:#6E9B8F;
+    --line-dark:rgba(242,238,228,0.14); --line-light:rgba(27,32,39,0.13);
+    --danger:#C96B57;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--paper-ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;}
+  .display{font-family:'Fraunces',serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 24px 90px;}
+  @media (max-width:640px){ .wrap{padding:0 16px 60px;} }
+
+  header.top{ padding:34px 0 26px; border-bottom:1px solid var(--line-dark); margin-bottom:44px; }
+  .brand{font-family:'Fraunces',serif; font-weight:680; font-size:20px;}
+  .brand span{color:var(--gold);}
+  .top-sub{font-size:13.5px; color:var(--paper-ink-soft); margin-top:6px;}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.07em; text-transform:uppercase;
+    color:var(--gold-soft); display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  }
+  .eyebrow::before{content:""; width:14px; height:1px; background:var(--gold-soft);}
+
+  .panel{
+    background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:8px;
+    padding:32px 30px; margin-bottom:28px;
+  }
+  h1.display{font-size:clamp(26px,3.6vw,34px); font-weight:600; margin:0 0 10px; line-height:1.15;}
+  .panel p.lead{color:var(--paper-ink-soft); font-size:15px; line-height:1.6; margin:0 0 28px; max-width:560px;}
+
+  .field-group{margin-bottom:24px;}
+  .field-label{font-size:13px; font-weight:600; color:var(--paper-ink); margin-bottom:10px; display:block;}
+  .choice-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .choice{
+    border:1px solid var(--line-dark); background:var(--bg-panel-2); color:var(--paper-ink-soft);
+    padding:10px 16px; border-radius:20px; font-size:13.5px; cursor:pointer; transition:all .15s ease;
+    user-select:none;
+  }
+  .choice:hover{border-color:var(--gold-soft);}
+  .choice.selected{background:var(--gold); border-color:var(--gold); color:var(--bg); font-weight:600;}
+
+  input[type="text"]{
+    width:100%; background:var(--bg-panel-2); border:1px solid var(--line-dark); border-radius:5px;
+    padding:12px 14px; color:var(--paper-ink); font-size:14.5px; font-family:'Inter',sans-serif;
+  }
+  input[type="text"]::placeholder{color:var(--paper-ink-soft); opacity:0.6;}
+  input[type="text"]:focus{outline:none; border-color:var(--gold-soft);}
+
+  .btn-primary{
+    background:var(--gold); color:var(--bg); font-weight:700; font-size:15px;
+    padding:14px 26px; border-radius:5px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:10px;
+    transition:background .15s ease;
+  }
+  .btn-primary:hover{background:var(--gold-soft);}
+  .btn-primary:disabled{opacity:0.55; cursor:not-allowed;}
+  .btn-ghost{
+    background:transparent; color:var(--paper-ink-soft); border:1px solid var(--line-dark); font-size:13.5px;
+    padding:9px 16px; border-radius:5px; cursor:pointer;
+  }
+  .btn-ghost:hover{color:var(--paper-ink); border-color:var(--paper-ink-soft);}
+
+  .spinner{
+    width:15px; height:15px; border:2px solid rgba(16,21,28,0.25); border-top-color:var(--bg);
+    border-radius:50%; animation:spin .7s linear infinite; display:inline-block;
+  }
+  @keyframes spin{ to{transform:rotate(360deg);} }
+
+  .error-box{
+    background:rgba(201,107,87,0.1); border:1px solid rgba(201,107,87,0.4); color:#E8A79A;
+    padding:14px 16px; border-radius:5px; font-size:13.5px; margin-top:16px; line-height:1.5;
+  }
+
+  #plan-section{display:none;}
+  .plan-intro{
+    font-size:15px; line-height:1.65; color:var(--paper-ink-soft); margin-bottom:26px;
+  }
+  .step-card{
+    background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:7px;
+    padding:22px 24px; margin-bottom:14px; display:grid; grid-template-columns:44px 1fr; gap:16px;
+  }
+  .step-num{
+    font-family:'IBM Plex Mono',monospace; color:var(--gold-soft); font-size:14px; padding-top:2px;
+  }
+  .step-title-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
+  .step-title{font-size:16.5px; font-weight:600; color:var(--paper-ink);}
+  .step-time{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--spruce-light); white-space:nowrap;}
+  .step-desc{font-size:14px; line-height:1.6; color:var(--paper-ink-soft); margin:0 0 10px;}
+  .step-meta{font-size:12.5px; color:var(--paper-ink-soft); opacity:0.85; border-top:1px solid var(--line-dark); padding-top:10px; margin-top:4px;}
+  .step-meta b{color:var(--gold-soft); font-weight:600;}
+
+  .plan-actions{display:flex; gap:14px; margin:26px 0 46px; flex-wrap:wrap;}
+
+  #chat-section{display:none;}
+  .chat-panel{
+    background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:8px; overflow:hidden;
+  }
+  .chat-head{padding:20px 24px; border-bottom:1px solid var(--line-dark);}
+  .chat-head h3{font-family:'Fraunces',serif; font-size:18px; font-weight:600; margin:0 0 4px;}
+  .chat-head p{font-size:13px; color:var(--paper-ink-soft); margin:0;}
+  #chat-log{max-height:420px; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:14px;}
+  .msg{max-width:82%; padding:11px 15px; border-radius:9px; font-size:14px; line-height:1.55;}
+  .msg.user{align-self:flex-end; background:var(--gold); color:var(--bg); font-weight:500;}
+  .msg.assistant{align-self:flex-start; background:var(--bg-panel-2); color:var(--paper-ink); border:1px solid var(--line-dark);}
+  .msg.assistant.loading{color:var(--paper-ink-soft); font-style:italic;}
+  .chat-input-row{display:flex; gap:10px; padding:16px 20px; border-top:1px solid var(--line-dark);}
+  .chat-input-row input{flex:1;}
+
+  footer.disclaimer{
+    margin-top:60px; padding-top:24px; border-top:1px solid var(--line-dark);
+    font-size:12px; line-height:1.6; color:var(--paper-ink-soft); opacity:0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Dag<span>Ett</span></div>
+    <p class="top-sub">Prototype — your first 90 days in Sweden, in the right order.</p>
+  </header>
+
+  <section id="intake-section">
+    <div class="panel">
+      <div class="eyebrow">Step 1 of 2</div>
+      <h1 class="display">Tell us your situation</h1>
+      <p class="lead">Nothing sensitive — no documents, no personal numbers. Just enough to build your plan around the real dependency chain.</p>
+
+      <div class="field-group">
+        <span class="field-label">Your citizenship status</span>
+        <div class="choice-row" data-group="citizenship">
+          <div class="choice" data-value="EU/EEA citizen">EU/EEA citizen</div>
+          <div class="choice" data-value="Nordic citizen">Nordic citizen</div>
+          <div class="choice" data-value="Non-EU citizen">Non-EU citizen</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">Why you're moving</span>
+        <div class="choice-row" data-group="purpose">
+          <div class="choice" data-value="Work / employment">Work / employment</div>
+          <div class="choice" data-value="Study">Study</div>
+          <div class="choice" data-value="Family reunification">Family reunification</div>
+          <div class="choice" data-value="Starting a business">Starting a business</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">City or region</span>
+        <input type="text" id="city-input" placeholder="e.g. Stockholm, Gothenburg, Malmö">
+      </div>
+
+      <button class="btn-primary" id="generate-btn">Generate my 90-day plan</button>
+      <div id="intake-error"></div>
+    </div>
+  </section>
+
+  <section id="plan-section">
+    <div class="eyebrow">Step 2 of 2</div>
+    <h1 class="display" style="margin-bottom:18px;">Your 90-day plan</h1>
+    <p class="plan-intro" id="plan-intro-text"></p>
+    <div id="plan-steps"></div>
+    <div class="plan-actions">
+      <button class="btn-ghost" id="download-btn">Download as text</button>
+      <button class="btn-ghost" id="restart-btn">Start over</button>
+    </div>
+  </section>
+
+  <section id="chat-section">
+    <div class="eyebrow">Ask anything</div>
+    <div class="chat-panel">
+      <div class="chat-head">
+        <h3>Chat with your guide</h3>
+        <p>Ask about any step, form, or letter — in whatever language is easiest for you.</p>
+      </div>
+      <div id="chat-log"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="e.g. What do I bring to the Skatteverket appointment?">
+        <button class="btn-primary" id="chat-send-btn">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="disclaimer">
+    Independent guidance prototype. Not affiliated with Migrationsverket, Skatteverket, Försäkringskassan, or any Swedish government agency. Information is general guidance only, not legal or immigration advice — always confirm details on the relevant authority's official site.
+  </footer>
+</div>
+
+<script>
+(function(){
+  const state = { citizenship:null, purpose:null, city:'', plan:null, chatHistory:[] };
+
+  document.querySelectorAll('.choice-row').forEach(row=>{
+    row.addEventListener('click', (e)=>{
+      const choice = e.target.closest('.choice');
+      if(!choice) return;
+      const group = row.dataset.group;
+      row.querySelectorAll('.choice').forEach(c=>c.classList.remove('selected'));
+      choice.classList.add('selected');
+      state[group] = choice.dataset.value;
+    });
+  });
+
+  document.getElementById('city-input').addEventListener('input', (e)=>{
+    state.city = e.target.value;
+  });
+
+  const generateBtn = document.getElementById('generate-btn');
+  const intakeError = document.getElementById('intake-error');
+
+  function showError(container, message){
+    container.innerHTML = `<div class="error-box">${message}</div>`;
+  }
+  function clearError(container){ container.innerHTML = ''; }
+
+  async function callBackend(path, body){
+    let response;
+    try{
+      response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    } catch(networkErr){
+      throw new Error("Network-level failure calling the server: " + networkErr.message);
+    }
+    let data;
+    try{
+      data = await response.json();
+    } catch(parseErr){
+      throw new Error("Server did not return JSON.");
+    }
+    if(!response.ok){
+      throw new Error(data && data.error ? data.error : "Server error (status " + response.status + ")");
+    }
+    return data;
+  }
+
+  generateBtn.addEventListener('click', async ()=>{
+    clearError(intakeError);
+    if(!state.citizenship || !state.purpose || !state.city.trim()){
+      showError(intakeError, "Please select your citizenship status, your purpose, and enter a city before continuing.");
+      return;
+    }
+
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = '<span class="spinner"></span> Building your plan...';
+
+    try{
+      const parsed = await callBackend('/api/generate-plan', {
+        citizenship: state.citizenship,
+        purpose: state.purpose,
+        city: state.city
+      });
+      state.plan = parsed;
+      renderPlan(parsed);
+      document.getElementById('intake-section').style.display = 'none';
+      document.getElementById('plan-section').style.display = 'block';
+      document.getElementById('chat-section').style.display = 'block';
+      seedChat();
+    } catch(err){
+      console.error(err);
+      showError(intakeError, "Something went wrong generating your plan. Details: " + (err && err.message ? err.message : String(err)));
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = 'Generate my 90-day plan';
+    }
+  });
+
+  function renderPlan(plan){
+    document.getElementById('plan
