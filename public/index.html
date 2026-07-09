@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dag Ett — Your first 90 days in Sweden, in the right order</title>
+<meta name="description" content="A personalized 90-day plan for moving to Sweden — personnummer, BankID, bank account, and healthcare, in the right order, in your language.">
+<meta property="og:title" content="Dag Ett — Your first 90 days in Sweden">
+<meta property="og:description" content="A personalized 90-day relocation plan, built around the real dependency chain, with AI chat in your language.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2310151C'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23D9A441' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,680&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #10151C;
+    --bg-panel: #171F29;
+    --paper: #EFEAE0;
+    --paper-dim: #E4DECF;
+    --ink: #1B2027;
+    --ink-soft: #4A5160;
+    --paper-ink: #F2EEE4;
+    --paper-ink-soft: #B9BFC9;
+    --gold: #D9A441;
+    --gold-soft: #F0CD87;
+    --spruce: #3E6259;
+    --spruce-light: #6E9B8F;
+    --line-dark: rgba(242,238,228,0.14);
+    --line-light: rgba(27,32,39,0.13);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--paper-ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Fraunces',serif; font-optical-sizing:auto;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(16,21,28,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-dark);
+  }
+  nav .row{display:flex; align-items:center; justify-content:space-between; padding:18px 28px;}
+  .brand{font-family:'Fraunces',serif; font-weight:680; font-size:20px; letter-spacing:0.01em; color:var(--paper-ink);}
+  .brand span{color:var(--gold);}
+  .nav-cta{
+    font-size:14px; font-weight:600; color:var(--bg); background:var(--gold);
+    padding:9px 18px; border-radius:3px; text-decoration:none;
+    transition:background 0.15s ease;
+  }
+  .nav-cta:hover{background:var(--gold-soft);}
+
+  .hero{
+    padding:88px 0 96px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(217,164,65,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at -10% 40%, rgba(62,98,89,0.16), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:64px; align-items:start;
+    position:relative;
+  }
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--gold-soft);
+    margin-bottom:22px;
+  }
+  .eyebrow::before{content:""; width:16px; height:1px; background:var(--gold-soft);}
+
+  h1.display{
+    font-size:clamp(34px, 4.6vw, 56px);
+    font-weight:600;
+    line-height:1.06;
+    letter-spacing:-0.01em;
+    color:var(--paper-ink);
+    margin:0 0 22px;
+  }
+  h1.display em{font-style:italic; color:var(--gold);}
+
+  .hero p.lead{
+    font-size:17.5px; line-height:1.65; color:var(--paper-ink-soft);
+    max-width:480px; margin:0 0 34px;
+  }
+  .hero-ctas{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--gold); color:var(--bg); font-weight:700; font-size:15px;
+    padding:14px 26px; border-radius:3px; text-decoration:none; display:inline-block;
+    transition:transform 0.15s ease, background 0.15s ease;
+  }
+  .btn-primary:hover{background:var(--gold-soft); transform:translateY(-1px);}
+  .link-quiet{color:var(--paper-ink-soft); font-size:14.5px; text-decoration:none; border-bottom:1px solid var(--line-dark); padding-bottom:2px;}
+  .link-quiet:hover{color:var(--paper-ink);}
+
+  .timeline-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line-dark);
+    border-radius:6px;
+    padding:26px 24px 22px;
+  }
+  .timeline-card .tc-eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.07em; text-transform:uppercase;
+    color:var(--spruce-light); margin-bottom:18px; display:block;
+  }
+  .tl-step{
+    display:grid; grid-template-columns:34px 1fr auto; align-items:start; gap:12px;
+    padding:13px 0; border-top:1px solid var(--line-dark);
+  }
+  .tl-step:first-of-type{border-top:none;}
+  .tl-num{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--gold-soft); padding-top:1px;}
+  .tl-name{font-size:14.5px; font-weight:600; color:var(--paper-ink);}
+  .tl-week{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--paper-ink-soft); white-space:nowrap; padding-top:2px;}
+  .tc-note{
+    font-size:13px; line-height:1.55; color:var(--paper-ink-soft);
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--line-dark);
+  }
+
+  .pain{padding:88px 0; border-top:1px solid var(--line-dark);}
+  .pain-head{max-width:560px; margin-bottom:52px;}
+  .pain-head h2{font-size:clamp(26px,3vw,34px); font-weight:600; line-height:1.15; margin:0 0 14px;}
+  .pain-head p{color:var(--paper-ink-soft); font-size:15.5px; line-height:1.6; margin:0;}
+  .pain-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-dark); border:1px solid var(--line-dark); border-radius:6px; overflow:hidden;}
+  @media (max-width:800px){ .pain-grid{grid-template-columns:1fr;} }
+  .pain-item{background:var(--bg); padding:30px 26px;}
+  .pain-item .pi-mark{font-family:'IBM Plex Mono',monospace; color:var(--spruce-light); font-size:12px; margin-bottom:14px; display:block;}
+  .pain-item p{font-size:15px; line-height:1.55; color:var(--paper-ink-soft); margin:0;}
+
+  .pricing{background:var(--paper); color:var(--ink); padding:96px 0;}
+  .pricing-head{max-width:600px; margin-bottom:48px;}
+  .pricing .eyebrow{color:var(--spruce);}
+  .pricing .eyebrow::before{background:var(--spruce);}
+  .pricing-head h2{font-size:clamp(26px,3vw,34px); font-weight:600; margin:0 0 14px; color:var(--ink);}
+  .pricing-head p{color:var(--ink-soft); font-size:15.5px; line-height:1.6; margin:0;}
+
+  .price-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media (max-width:800px){ .price-grid{grid-template-columns:1fr;} }
+  .price-card{
+    background:#fff; border:1px solid var(--line-light); border-radius:8px; padding:34px 30px;
+    display:flex; flex-direction:column;
+  }
+  .price-card.featured{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold);}
+  .pc-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--spruce); margin-bottom:16px;}
+  .pc-title{font-family:'Fraunces',serif; font-size:23px; font-weight:600; color:var(--ink); margin:0 0 6px;}
+  .pc-price{font-size:15px; color:var(--ink-soft); margin:0 0 24px;}
+  .pc-price b{font-size:26px; font-family:'Fraunces',serif; color:var(--ink); font-weight:600;}
+  .pc-list{list-style:none; margin:0 0 28px; padding:0; flex:1;}
+  .pc-list li{
+    font-size:14.5px; line-height:1.5; color:var(--ink); padding:10px 0 10px 22px; position:relative;
+    border-top:1px solid var(--line-light);
+  }
+  .pc-list li:first-child{border-top:none;}
+  .pc-list li::before{content:"—"; position:absolute; left:0; color:var(--gold);}
+  .pc-btn{
+    text-align:center; padding:13px; border-radius:3px; font-weight:700; font-size:14.5px; text-decoration:none;
+  }
+  .pc-btn.solid{background:var(--ink); color:var(--paper);}
+  .pc-btn.outline{background:transparent; color:var(--ink); border:1.5px solid var(--ink);}
+
+  .how{padding:96px 0;}
+  .how-head{max-width:560px; margin-bottom:52px;}
+  .how-head h2{font-size:clamp(26px,3vw,34px); font-weight:600; margin:0 0 14px;}
+  .how-head p{color:var(--paper-ink-soft); font-size:15.5px; line-height:1.6; margin:0;}
+  .how-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:36px;}
+  @media (max-width:800px){ .how-grid{grid-template-columns:1fr;} }
+  .how-step .hs-num{font-family:'Fraunces',serif; font-size:40px; font-weight:600; color:var(--gold); line-height:1; margin-bottom:16px;}
+  .how-step h3{font-size:17px; font-weight:600; margin:0 0 10px; color:var(--paper-ink);}
+  .how-step p{font-size:14.5px; line-height:1.6; color:var(--paper-ink-soft); margin:0;}
+
+  .proof{padding:0 0 96px;}
+  .proof-card{
+    border:1px dashed var(--line-dark); border-radius:6px; padding:44px 32px; text-align:center;
+    background:var(--bg-panel);
+  }
+  .proof-card p.big{font-family:'Fraunces',serif; font-style:italic; font-size:19px; color:var(--paper-ink-soft); margin:0 0 8px;}
+  .proof-card p.small{font-size:13px; color:var(--paper-ink-soft); opacity:0.7; margin:0;}
+
+  .final{
+    padding:100px 0; text-align:center; border-top:1px solid var(--line-dark);
+    background:linear-gradient(180deg, var(--bg) 0%, #0B0F14 100%);
+  }
+  .final h2{font-size:clamp(28px,4vw,42px); font-weight:600; margin:0 0 18px; max-width:640px; margin-inline:auto;}
+  .final p{color:var(--paper-ink-soft); font-size:16px; margin:0 0 32px;}
+
+  footer{border-top:1px solid var(--line-dark); padding:32px 0; }
+  footer .row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  footer p{font-size:12.5px; color:var(--paper-ink-soft); opacity:0.7; margin:0; line-height:1.5; max-width:640px;}
+  footer .fbrand{font-family:'Fraunces',serif; font-weight:600; color:var(--paper-ink-soft);}
+
+  section{scroll-margin-top:80px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap row">
+    <div class="brand">Dag<span>Ett</span></div>
+    <a href="/app.html" class="nav-cta">Get your plan</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">First 90 days in Sweden</div>
+      <h1 class="display">Sweden doesn't wait <em>for you to figure it out.</em></h1>
+      <p class="lead">Dag Ett turns personnummer, BankID, bank accounts, and healthcare into one clear order — with an AI guide that answers your questions any hour, in your language.</p>
+      <div class="hero-ctas">
+        <a href="/app.html" class="btn-primary">Get your 90-day plan — 299 kr</a>
+        <a href="#how" class="link-quiet">See how it works</a>
+      </div>
+    </div>
+    <div class="timeline-card">
+      <span class="tc-eyebrow">The order matters</span>
+
+      <div class="tl-step">
+        <span class="tl-num">01</span>
+        <span class="tl-name">Personnummer</span>
+        <span class="tl-week">Week 1–2</span>
+      </div>
+      <div class="tl-step">
+        <span class="tl-num">02</span>
+        <span class="tl-name">BankID</span>
+        <span class="tl-week">Week 1–3</span>
+      </div>
+      <div class="tl-step">
+        <span class="tl-num">03</span>
+        <span class="tl-name">Bank account</span>
+        <span class="tl-week">Week 2–4</span>
+      </div>
+      <div class="tl-step">
+        <span class="tl-num">04</span>
+        <span class="tl-name">Healthcare card</span>
+        <span class="tl-week">Week 3–6</span>
+      </div>
+      <div class="tl-step">
+        <span class="tl-num">05</span>
+        <span class="tl-name">Tax registration</span>
+        <span class="tl-week">Week 4–8</span>
+      </div>
+      <div class="tl-step">
+        <span class="tl-num">06</span>
+        <span class="tl-name">Settled</span>
+        <span class="tl-week">Day 90</span>
+      </div>
+
+      <p class="tc-note">Do these out of order and each one can take twice as long. Dag Ett is built around the real dependency chain — not a generic checklist.</p>
+    </div>
+  </div>
+</header>
+
+<section class="pain">
+  <div class="wrap">
+    <div class="pain-head">
+      <div class="eyebrow">Why this exists</div>
+      <h2 class="display">You're not confused. The system is.</h2>
+      <p>Every year, hundreds of thousands of people move to Sweden for work, study, or family — and hit the same wall in their first week.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-item">
+        <span class="pi-mark">01</span>
+        <p>Letters from Skatteverket and Försäkringskassan that read like a second language exam — even when you speak Swedish.</p>
+      </div>
+      <div class="pain-item">
+        <span class="pi-mark">02</span>
+        <p>Personnummer appointments booked weeks out, and no way to know if you even qualify yet.</p>
+      </div>
+      <div class="pain-item">
+        <span class="pi-mark">03</span>
+        <p>No single place tells you what to do first — so people guess, and guessing costs weeks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="pricing-head">
+      <div class="eyebrow">Two ways to use it</div>
+      <h2>Pay once for the first 90 days. Stay only if you still need it.</h2>
+      <p>Most people need focused help getting settled — not another subscription. So we built it that way.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card featured">
+        <span class="pc-tag">One-time</span>
+        <h3 class="pc-title">First 90 Days</h3>
+        <p class="pc-price"><b>299 kr</b> once</p>
+        <ul class="pc-list">
+          <li>Personalized step-by-step plan for your situation — work, study, or family reunification</li>
+          <li>Unlimited AI chat for questions during your first 90 days</li>
+          <li>Direct links to the right forms and offices for your municipality</li>
+          <li>Downloadable plan you can check off, even offline</li>
+        </ul>
+        <a href="/app.html" class="pc-btn solid">Get your plan</a>
+      </div>
+      <div class="price-card">
+        <span class="pc-tag">Optional add-on</span>
+        <h3 class="pc-title">Ongoing Support</h3>
+        <p class="pc-price"><b>59 kr</b> / month</p>
+        <ul class="pc-list">
+          <li>Reminders before visa and tax deadlines</li>
+          <li>Chat access continues beyond day 90</li>
+          <li>Alerts when Migrationsverket rules change</li>
+          <li>A community of others going through it with you</li>
+        </ul>
+        <a href="/app.html" class="pc-btn outline">Add after your plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="how-head">
+      <div class="eyebrow">How it works</div>
+      <h2 class="display">Three steps. About ten minutes.</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="hs-num">01</div>
+        <h3>Tell us your situation</h3>
+        <p>Nationality, purpose of your move, and the city you're headed to. Nothing sensitive, no documents to upload.</p>
+      </div>
+      <div class="how-step">
+        <div class="hs-num">02</div>
+        <h3>Get your 90-day plan</h3>
+        <p>Built from the real order of dependencies — not a generic list copied from a forum post.</p>
+      </div>
+      <div class="how-step">
+        <div class="hs-num">03</div>
+        <h3>Ask anything, anytime</h3>
+        <p>Stuck on a form or a letter? Ask in your own language and get a plain-language answer, day or night.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proof">
+  <div class="wrap">
+    <div class="proof-card">
+      <p class="big">"Your first review goes here."</p>
+      <p class="small">Reserved for the first person Dag Ett actually helps.</p>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2 class="display">Start before the queue does.</h2>
+    <p>299 kr for a plan built around how Sweden actually works.</p>
+    <a href="/app.html" class="btn-primary">Get your 90-day plan</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <span class="fbrand">Dag Ett</span>
+    <p>Independent guidance service. Not affiliated with Migrationsverket, Skatteverket, Försäkringskassan, or any Swedish government agency. Information provided is general guidance, not legal or immigration advice. <a href="/privacy.html" style="color:inherit;">Privacy policy</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
