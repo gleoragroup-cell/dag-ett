@@ -9,8 +9,8 @@ export default async function handler(req, res) {
   }
 
   const params = new URLSearchParams();
-  params.append('success_url', `${origin}/?session_id={CHECKOUT_SESSION_ID}&paid=true`);
-  params.append('cancel_url', `${origin}/?canceled=true`);
+  params.append('success_url', `${origin}/app.html?session_id={CHECKOUT_SESSION_ID}&paid=true`);
+  params.append('cancel_url', `${origin}/app.html?canceled=true`);
 
   if (tier === 'onetime') {
     params.append('mode', 'payment');
