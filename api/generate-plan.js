@@ -1,6 +1,43 @@
+const RATE_LIMIT_MAX = 8;          // max plan generations per IP per window
+const RATE_LIMIT_WINDOW_SECONDS = 3600; // 1 hour
+
+async function checkRateLimit(ip) {
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  if (!kvUrl || !kvToken) {
+    return { limited: false, configured: false };
+  }
+  try {
+    const key = `ratelimit:plan:${ip}`;
+    const incrRes = await fetch(`${kvUrl}/incr/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${kvToken}` }
+    });
+    const incrData = await incrRes.json();
+    const count = incrData.result;
+    if (count === 1) {
+      await fetch(`${kvUrl}/expire/${encodeURIComponent(key)}/${RATE_LIMIT_WINDOW_SECONDS}`, {
+        headers: { Authorization: `Bearer ${kvToken}` }
+      });
+    }
+    return { limited: count > RATE_LIMIT_MAX, configured: true, count };
+  } catch (err) {
+    console.error('Rate limit check failed, allowing request:', err);
+    return { limited: false, configured: true, error: true };
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+  const rateStatus = await checkRateLimit(ip);
+  if (!rateStatus.configured) {
+    console.warn('KV_REST_API_URL / KV_REST_API_TOKEN not set - rate limiting is disabled.');
+  }
+  if (rateStatus.limited) {
+    return res.status(429).json({ error: 'Too many plan requests from this connection. Please wait a while and try again.' });
   }
 
   const { citizenship, purpose, city, language } = req.body || {};
@@ -23,9 +60,16 @@ export default async function handler(req, res) {
     }
   ]
 }
-Produce 6-9 steps covering the realistic dependency order for this specific person's situation (citizenship status and purpose of move affect the order and requirements a lot - e.g. non-EU citizens need a residence/work permit before most other steps, EU citizens do not). Be accurate about real Swedish processes: personnummer, BankID, opening a bank account, registering with Forsakringskassan, healthcare (region-specific vardcentral registration), tax registration, and any permit-specific steps. Do not invent fake requirements. Keep descriptions concise and practical, not generic filler.
 
-CRITICAL ACCURACY GUARDRAIL: Do NOT include Arbetsformedlingens etableringsprogram (the establishment program) as a step unless the person's situation is specifically asylum-related or refugee/protection-status residency. This program does not apply to EU/EEA citizens, standard work-permit holders, students, or most family-reunification cases - including it for those groups would be a factual error. More generally, only include steps that are genuinely relevant to the specific citizenship status and purpose given - do not pad the plan with steps that apply to a different category of migrant.
+FACTUAL GROUND TRUTH - follow these precisely, they come from official Migrationsverket and Skatteverket guidance:
+- Nordic citizens (Denmark, Finland, Norway, Iceland): need NO right-of-residence proof and NO residence permit at all. They can register directly with Skatteverket for folkbokforing/personnummer.
+- EU/EEA citizens: do NOT apply for or receive a "residence permit" (uppehallstillstand). Instead they have "uppehallsratt" (right of residence) automatically if working, self-employed, studying, or self-sufficient - this is shown as evidence to Skatteverket (e.g. employment contract) when registering for folkbokforing, not approved by Migrationsverket. If planning to stay 1+ year, they register with Skatteverket and visit a servicekontor for ID verification.
+- Non-EU/EEA citizens joining an EU/EES family member: apply for "uppehallskort" (residence card) from Migrationsverket if staying more than 3 months - this is a different, typically faster and fee-free process compared to a standard residence permit.
+- Non-EU/EEA citizens on standard work permits, study permits, or joining a non-EU/EES or Swedish family member (outside the EU free-movement rules): need "uppehallstillstand" (residence permit) approved by Migrationsverket BEFORE most other steps, including folkbokforing.
+- Do NOT include Arbetsformedlingens etableringsprogram (the establishment program) as a step unless the situation is specifically asylum-related or refugee/protection-status residency. It does not apply to EU/EEA citizens, Nordic citizens, standard work-permit holders, students, or most family-reunification cases.
+- Only include steps genuinely relevant to the specific citizenship status and purpose given - do not pad the plan with steps for a different migrant category, and do not describe EU/EEA citizens as needing permit "approval".
+
+Produce 6-9 steps covering the realistic dependency order for this specific person's situation. Be accurate about real Swedish processes: personnummer, BankID, opening a bank account, registering with Forsakringskassan, healthcare (region-specific vardcentral registration), tax registration, and any permit-specific steps. Do not invent fake requirements. Keep descriptions concise and practical, not generic filler.
 
 IMPORTANT: Keep every "description" to at most 2 short sentences and every "tip" to at most 1 short sentence, regardless of language. This is critical when writing in non-Latin scripts (Hindi, Arabic, Ukrainian, etc.) where the same content takes more space - brevity ensures the full response fits and is not cut off.
 
@@ -73,7 +117,7 @@ Write all "intro", "title", "description", and "tip" text in ${outputLanguage}. 
           console.error('Failed to parse model output as JSON (fallback also failed). stop_reason:', data.stop_reason, text);
           return res.status(502).json({
             error: truncated
-              ? 'Response was cut off before finishing (ran out of length). Try again — this should be rarer now with a higher limit.'
+              ? 'Response was cut off before finishing (ran out of length). Try again.'
               : 'Model did not return valid JSON',
             raw: text
           });
