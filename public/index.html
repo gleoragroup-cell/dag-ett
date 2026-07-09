@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dag Ett — Your Swedish relocation assistant</title>
+<meta name="description" content="A personalized 90-day plan for moving to Sweden — personnummer, BankID, bank account, and healthcare, in the right order, in your language.">
+<meta property="og:title" content="Dag Ett — Your first 90 days in Sweden">
+<meta property="og:description" content="A personalized 90-day relocation plan, built around the real dependency chain, with AI chat in your language.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2310151C'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23D9A441' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,680&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -35,6 +40,7 @@
   }
   .eyebrow::before{content:""; width:14px; height:1px; background:var(--gold-soft);}
 
+  /* ---- Intake form ---- */
   .panel{
     background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:8px;
     padding:32px 30px; margin-bottom:28px;
@@ -42,7 +48,7 @@
   h1.display{font-size:clamp(26px,3.6vw,34px); font-weight:600; margin:0 0 10px; line-height:1.15;}
   .panel p.lead{color:var(--paper-ink-soft); font-size:15px; line-height:1.6; margin:0 0 28px; max-width:560px;}
 
-  .field-group{margin-bottom:24px;}
+  .field-group{margin-bottom:24px; position:relative;}
   .field-label{font-size:13px; font-weight:600; color:var(--paper-ink); margin-bottom:10px; display:block;}
   .choice-row{display:flex; flex-wrap:wrap; gap:10px;}
   .choice{
@@ -61,6 +67,34 @@
   input[type="text"]::placeholder{color:var(--paper-ink-soft); opacity:0.6;}
   input[type="text"]:focus{outline:none; border-color:var(--gold-soft);}
 
+  /* ---- Searchable dropdown ---- */
+  .dropdown{position:relative;}
+  .dropdown-toggle{
+    width:100%; text-align:left; background:var(--bg-panel-2); border:1px solid var(--line-dark); color:var(--paper-ink);
+    padding:12px 14px; border-radius:5px; font-size:14.5px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+    font-family:inherit; -webkit-appearance:none; appearance:none; outline:none; -webkit-tap-highlight-color:transparent;
+  }
+  .dropdown-toggle:hover{border-color:var(--gold-soft);}
+  .dropdown-toggle .chev{color:var(--paper-ink-soft); font-size:11px; margin-left:10px; transition:transform .15s ease;}
+  .dropdown.open .dropdown-toggle{border-color:var(--gold-soft);}
+  .dropdown.open .dropdown-toggle .chev{transform:rotate(180deg);}
+  .dropdown-panel{
+    display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; background:var(--bg-panel-2); border:1px solid var(--line-dark);
+    border-radius:6px; z-index:30; max-height:280px; flex-direction:column; box-shadow:0 14px 34px rgba(0,0,0,0.45);
+  }
+  .dropdown.open .dropdown-panel{display:flex;}
+  .dropdown-search{
+    margin:10px; width:calc(100% - 20px); background:var(--bg); border:1px solid var(--line-dark); border-radius:4px;
+    padding:9px 12px; color:var(--paper-ink); font-size:13.5px; font-family:inherit; outline:none;
+  }
+  .dropdown-search:focus{border-color:var(--gold-soft);}
+  .dropdown-list{overflow-y:auto; padding:0 6px 8px;}
+  .dropdown-option{
+    padding:10px 10px; font-size:14px; color:var(--paper-ink-soft); cursor:pointer; border-radius:4px;
+  }
+  .dropdown-option:hover, .dropdown-option.active{background:var(--gold); color:var(--bg);}
+  .dropdown-empty{padding:14px; font-size:13px; color:var(--paper-ink-soft); text-align:center;}
+
   .btn-primary{
     background:var(--gold); color:var(--bg); font-weight:700; font-size:15px;
     padding:14px 26px; border-radius:5px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:10px;
@@ -70,7 +104,7 @@
   .btn-primary:disabled{opacity:0.55; cursor:not-allowed;}
   .btn-ghost{
     background:transparent; color:var(--paper-ink-soft); border:1px solid var(--line-dark); font-size:13.5px;
-    padding:9px 16px; border-radius:5px; cursor:pointer;
+    padding:9px 16px; border-radius:5px; cursor:pointer; font-family:inherit;
   }
   .btn-ghost:hover{color:var(--paper-ink); border-color:var(--paper-ink-soft);}
 
@@ -85,6 +119,7 @@
     padding:14px 16px; border-radius:5px; font-size:13.5px; margin-top:16px; line-height:1.5;
   }
 
+  /* ---- Plan output ---- */
   #plan-section{display:none;}
   .plan-intro{
     font-size:15px; line-height:1.65; color:var(--paper-ink-soft); margin-bottom:26px;
@@ -92,7 +127,9 @@
   .step-card{
     background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:7px;
     padding:22px 24px; margin-bottom:14px; display:grid; grid-template-columns:44px 1fr; gap:16px;
+    animation:fadeInUp .35s ease both;
   }
+  @keyframes fadeInUp{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
   .step-num{
     font-family:'IBM Plex Mono',monospace; color:var(--gold-soft); font-size:14px; padding-top:2px;
   }
@@ -103,8 +140,9 @@
   .step-meta{font-size:12.5px; color:var(--paper-ink-soft); opacity:0.85; border-top:1px solid var(--line-dark); padding-top:10px; margin-top:4px;}
   .step-meta b{color:var(--gold-soft); font-weight:600;}
 
-  .plan-actions{display:flex; gap:14px; margin:26px 0 46px; flex-wrap:wrap;}
+  .plan-actions{display:flex; gap:12px; margin:26px 0 46px; flex-wrap:wrap;}
 
+  /* ---- Chat ---- */
   #chat-section{display:none;}
   .chat-panel{
     background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:8px; overflow:hidden;
@@ -113,16 +151,25 @@
   .chat-head h3{font-family:'Fraunces',serif; font-size:18px; font-weight:600; margin:0 0 4px;}
   .chat-head p{font-size:13px; color:var(--paper-ink-soft); margin:0;}
   #chat-log{max-height:420px; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:14px;}
-  .msg{max-width:82%; padding:11px 15px; border-radius:9px; font-size:14px; line-height:1.55;}
+  .msg{max-width:82%; padding:11px 15px; border-radius:9px; font-size:14px; line-height:1.55; animation:fadeInUp .25s ease both;}
   .msg.user{align-self:flex-end; background:var(--gold); color:var(--bg); font-weight:500;}
   .msg.assistant{align-self:flex-start; background:var(--bg-panel-2); color:var(--paper-ink); border:1px solid var(--line-dark);}
   .msg.assistant.loading{color:var(--paper-ink-soft); font-style:italic;}
+  .msg.system{align-self:center; background:transparent; color:var(--paper-ink-soft); font-size:12.5px; font-style:italic; opacity:0.8;}
   .chat-input-row{display:flex; gap:10px; padding:16px 20px; border-top:1px solid var(--line-dark);}
   .chat-input-row input{flex:1;}
 
   footer.disclaimer{
     margin-top:60px; padding-top:24px; border-top:1px solid var(--line-dark);
     font-size:12px; line-height:1.6; color:var(--paper-ink-soft); opacity:0.7;
+  }
+
+  @media print{
+    header.top, #paywall-section, #intake-section, #chat-section, .plan-actions, footer.disclaimer{display:none !important;}
+    body{background:#fff; color:#111;}
+    .step-card{background:#fff; border:1px solid #ccc; break-inside:avoid;}
+    .step-title, .plan-intro, .step-desc{color:#111;}
+    .eyebrow, .step-time{color:#555;}
   }
 </style>
 </head>
@@ -131,7 +178,7 @@
 <div class="wrap">
   <header class="top">
     <div class="brand">Dag<span>Ett</span></div>
-    <p class="top-sub">Prototype — your first 90 days in Sweden, in the right order.</p>
+    <p class="top-sub">Your first 90 days in Sweden, in the right order.</p>
   </header>
 
   <section id="paywall-section">
@@ -156,15 +203,15 @@
 
       <div class="field-group">
         <span class="field-label">Preferred language</span>
-        <div class="choice-row" data-group="language">
-          <button type="button" class="choice" data-value="English">English</button>
-          <button type="button" class="choice" data-value="Svenska">Svenska</button>
-          <button type="button" class="choice" data-value="العربية">العربية</button>
-          <button type="button" class="choice" data-value="Українська">Українська</button>
-          <button type="button" class="choice" data-value="Español">Español</button>
-          <button type="button" class="choice" data-value="Русский">Русский</button>
+        <div class="dropdown" id="language-dropdown">
+          <button type="button" class="dropdown-toggle" id="language-toggle">
+            <span class="tval">English</span><span class="chev">▾</span>
+          </button>
+          <div class="dropdown-panel" id="language-panel">
+            <input type="text" class="dropdown-search" id="language-search" placeholder="Search language...">
+            <div class="dropdown-list" id="language-list"></div>
+          </div>
         </div>
-        <input type="text" id="language-other-input" placeholder="Or type another language (e.g. Tigrinya, Farsi, Hindi)" style="margin-top:10px;">
       </div>
 
       <div class="field-group">
@@ -188,7 +235,16 @@
 
       <div class="field-group">
         <span class="field-label">City or region</span>
-        <input type="text" id="city-input" placeholder="e.g. Stockholm, Gothenburg, Malmö">
+        <div class="dropdown" id="city-dropdown">
+          <button type="button" class="dropdown-toggle" id="city-toggle">
+            <span class="tval">Choose your city or region</span><span class="chev">▾</span>
+          </button>
+          <div class="dropdown-panel" id="city-panel">
+            <input type="text" class="dropdown-search" id="city-search" placeholder="Search city...">
+            <div class="dropdown-list" id="city-list"></div>
+          </div>
+        </div>
+        <input type="text" id="city-other-input" placeholder="Type your city or region" style="display:none; margin-top:10px;">
       </div>
 
       <button class="btn-primary" id="generate-btn">Generate my 90-day plan</button>
@@ -203,6 +259,8 @@
     <div id="plan-steps"></div>
     <div class="plan-actions">
       <button class="btn-ghost" id="download-btn">Download as text</button>
+      <button class="btn-ghost" id="copy-btn">Copy plan</button>
+      <button class="btn-ghost" id="print-btn">Print / Save as PDF</button>
       <button class="btn-ghost" id="restart-btn">Start over</button>
     </div>
   </section>
@@ -230,7 +288,103 @@
 <script>
 (function(){
   const state = { citizenship:null, purpose:null, city:'', language:'English', plan:null, chatHistory:[] };
+  const MAX_CHAT_MESSAGES = 30;
+  let chatMessageCount = 0;
 
+  const LANGUAGES = [
+    "English","Svenska","العربية","فارسی","دری","Українська","Русский","Español","Português","Français",
+    "Deutsch","Italiano","Polski","Română","Ελληνικά","Türkçe","کوردی","Soomaali","Kiswahili","አማርኛ",
+    "ትግርኛ","हिन्दी","اردو","বাংলা","தமிழ்","తెలుగు","मराठी","ਪੰਜਾਬੀ","ગુજરાતી","中文",
+    "日本語","한국어","Tiếng Việt","ภาษาไทย","Bahasa Indonesia","Bahasa Melayu","Filipino","Nederlands","Dansk","Norsk",
+    "Suomi","עברית"
+  ].map(l => ({ value:l, label:l }));
+
+  const CITIES = [
+    "Stockholm","Göteborg","Malmö","Uppsala","Linköping","Örebro","Västerås","Helsingborg","Norrköping","Jönköping",
+    "Lund","Umeå","Gävle","Sundsvall","Södertälje","Eskilstuna","Halmstad","Växjö","Karlstad","Täby",
+    "Varberg","Trollhättan","Östersund","Borås","Falun","Kalmar","Kristianstad","Skövde","Karlskrona","Uddevalla"
+  ].map(c => ({ value:c, label:c }));
+  CITIES.push({ value:"__other__", label:"Other city or region (type it in)" });
+
+  // ---- Generic searchable dropdown ----
+  function setupDropdown({ dropdownId, toggleId, panelId, searchId, listId, options, onSelect }){
+    const dropdownEl = document.getElementById(dropdownId);
+    const toggle = document.getElementById(toggleId);
+    const panel = document.getElementById(panelId);
+    const search = document.getElementById(searchId);
+    const list = document.getElementById(listId);
+
+    function renderList(filter){
+      list.innerHTML = '';
+      const f = (filter||'').toLowerCase();
+      const filtered = options.filter(o => o.label.toLowerCase().includes(f));
+      if(filtered.length === 0){
+        list.innerHTML = '<div class="dropdown-empty">No matches</div>';
+        return;
+      }
+      filtered.forEach(o=>{
+        const opt = document.createElement('div');
+        opt.className = 'dropdown-option';
+        opt.textContent = o.label;
+        opt.addEventListener('click', ()=>{
+          toggle.querySelector('.tval').textContent = o.label;
+          dropdownEl.classList.remove('open');
+          onSelect(o.value, o.label);
+        });
+        list.appendChild(opt);
+      });
+    }
+
+    toggle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const isOpen = dropdownEl.classList.contains('open');
+      document.querySelectorAll('.dropdown.open').forEach(d=>{ if(d!==dropdownEl) d.classList.remove('open'); });
+      if(isOpen){
+        dropdownEl.classList.remove('open');
+      } else {
+        dropdownEl.classList.add('open');
+        search.value = '';
+        renderList('');
+        setTimeout(()=>search.focus(), 60);
+      }
+    });
+
+    search.addEventListener('input', (e)=> renderList(e.target.value));
+    search.addEventListener('click', (e)=> e.stopPropagation());
+    panel.addEventListener('click', (e)=> e.stopPropagation());
+
+    renderList('');
+  }
+
+  document.addEventListener('click', ()=>{
+    document.querySelectorAll('.dropdown.open').forEach(d=> d.classList.remove('open'));
+  });
+
+  setupDropdown({
+    dropdownId:'language-dropdown', toggleId:'language-toggle', panelId:'language-panel',
+    searchId:'language-search', listId:'language-list', options: LANGUAGES,
+    onSelect: (value)=>{ state.language = value; }
+  });
+
+  const cityOtherInput = document.getElementById('city-other-input');
+  setupDropdown({
+    dropdownId:'city-dropdown', toggleId:'city-toggle', panelId:'city-panel',
+    searchId:'city-search', listId:'city-list', options: CITIES,
+    onSelect: (value)=>{
+      if(value === '__other__'){
+        cityOtherInput.style.display = 'block';
+        cityOtherInput.focus();
+        state.city = cityOtherInput.value.trim();
+      } else {
+        cityOtherInput.style.display = 'none';
+        state.city = value;
+      }
+    }
+  });
+  cityOtherInput.addEventListener('input', (e)=>{ state.city = e.target.value.trim(); });
+  cityOtherInput.addEventListener('click', (e)=> e.stopPropagation());
+
+  // ---- Paywall / payment ----
   const ACCESS_KEY = 'dagett_access';
 
   function showPaywallError(message){
@@ -298,6 +452,7 @@
 
   checkAccessOnLoad();
 
+  // ---- choice selection (citizenship / purpose) ----
   document.querySelectorAll('.choice-row').forEach(row=>{
     row.addEventListener('click', (e)=>{
       const choice = e.target.closest('.choice');
@@ -306,28 +461,7 @@
       row.querySelectorAll('.choice').forEach(c=>c.classList.remove('selected'));
       choice.classList.add('selected');
       state[group] = choice.dataset.value;
-      if(group === 'language'){
-        document.getElementById('language-other-input').value = '';
-      }
     });
-  });
-
-  const defaultLangBtn = document.querySelector('.choice-row[data-group="language"] .choice[data-value="English"]');
-  if(defaultLangBtn) defaultLangBtn.classList.add('selected');
-
-  document.getElementById('language-other-input').addEventListener('input', (e)=>{
-    const val = e.target.value.trim();
-    if(val){
-      state.language = val;
-      document.querySelectorAll('.choice-row[data-group="language"] .choice').forEach(c=>c.classList.remove('selected'));
-    } else {
-      state.language = 'English';
-      if(defaultLangBtn) defaultLangBtn.classList.add('selected');
-    }
-  });
-
-  document.getElementById('city-input').addEventListener('input', (e)=>{
-    state.city = e.target.value;
   });
 
   const generateBtn = document.getElementById('generate-btn');
@@ -364,7 +498,7 @@
   generateBtn.addEventListener('click', async ()=>{
     clearError(intakeError);
     if(!state.citizenship || !state.purpose || !state.city.trim()){
-      showError(intakeError, "Please select your citizenship status, your purpose, and enter a city before continuing.");
+      showError(intakeError, "Please select your citizenship status, your purpose, and your city before continuing.");
       return;
     }
 
@@ -397,9 +531,10 @@
     document.getElementById('plan-intro-text').textContent = plan.intro || '';
     const stepsContainer = document.getElementById('plan-steps');
     stepsContainer.innerHTML = '';
-    (plan.steps || []).forEach(step=>{
+    (plan.steps || []).forEach((step, i)=>{
       const card = document.createElement('div');
       card.className = 'step-card';
+      card.style.animationDelay = (i * 0.05) + 's';
       card.innerHTML = `
         <div class="step-num">${String(step.order).padStart(2,'0')}</div>
         <div>
@@ -421,13 +556,17 @@
     return div.innerHTML;
   }
 
-  document.getElementById('download-btn').addEventListener('click', ()=>{
-    if(!state.plan) return;
+  function planAsText(){
     let text = `DAG ETT — YOUR 90-DAY PLAN\n\n${state.plan.intro}\n\n`;
     state.plan.steps.forEach(s=>{
       text += `${String(s.order).padStart(2,'0')}. ${s.title} (${s.timeframe})\n${s.description}\nAuthority: ${s.authority}\n${s.tip ? 'Tip: ' + s.tip : ''}\n\n`;
     });
-    const blob = new Blob([text], {type:'text/plain'});
+    return text;
+  }
+
+  document.getElementById('download-btn').addEventListener('click', ()=>{
+    if(!state.plan) return;
+    const blob = new Blob([planAsText()], {type:'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = 'dag-ett-90-day-plan.txt';
@@ -435,16 +574,37 @@
     URL.revokeObjectURL(url);
   });
 
+  document.getElementById('copy-btn').addEventListener('click', async ()=>{
+    if(!state.plan) return;
+    const btn = document.getElementById('copy-btn');
+    try{
+      await navigator.clipboard.writeText(planAsText());
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(()=>{ btn.textContent = original; }, 1600);
+    } catch(err){
+      showError(intakeError, 'Could not copy automatically — please select and copy the text manually.');
+    }
+  });
+
+  document.getElementById('print-btn').addEventListener('click', ()=>{
+    window.print();
+  });
+
   document.getElementById('restart-btn').addEventListener('click', ()=>{
     location.reload();
   });
 
+  // ---- Chat ----
   const chatLog = document.getElementById('chat-log');
   const chatInput = document.getElementById('chat-input');
   const chatSendBtn = document.getElementById('chat-send-btn');
 
   function seedChat(){
     state.chatHistory = [];
+    chatMessageCount = 0;
+    chatInput.disabled = false;
+    chatSendBtn.disabled = false;
     addMessage('assistant', "Your plan is ready above. Ask me anything about any step — forms, what to bring, or how the process works in " + state.city + ". (Responses will be in " + state.language + ".)");
   }
 
@@ -460,9 +620,18 @@
   async function sendChat(){
     const text = chatInput.value.trim();
     if(!text) return;
+
+    if(chatMessageCount >= MAX_CHAT_MESSAGES){
+      addMessage('system', "You've reached this session's chat limit. Refresh the page to start a new session (you'll need to regenerate your plan).");
+      chatInput.disabled = true;
+      chatSendBtn.disabled = true;
+      return;
+    }
+
     chatInput.value = '';
     addMessage('user', text);
     state.chatHistory.push({role:'user', content:text});
+    chatMessageCount++;
     const loadingMsg = addMessage('assistant', 'Thinking...', true);
 
     try{
