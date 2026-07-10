@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Dag Ett</title>
+<meta name="description" content="Common questions about Dag Ett — pricing, accuracy, languages supported, and how the 90-day plan works.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2310151C'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23D9A441' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,680&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10151C; --bg-panel:#171F29; --bg-panel-2:#1D2733;
+    --paper-ink:#F2EEE4; --paper-ink-soft:#B9BFC9;
+    --gold:#D9A441; --gold-soft:#F0CD87;
+    --line-dark:rgba(242,238,228,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--paper-ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 24px 90px;}
+  @media (max-width:640px){ .wrap{padding:0 16px 60px;} }
+  header.top{ padding:34px 0 26px; border-bottom:1px solid var(--line-dark); margin-bottom:40px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;}
+  .brand{font-family:'Fraunces',serif; font-weight:680; font-size:20px; text-decoration:none; color:var(--paper-ink);}
+  .brand span{color:var(--gold);}
+  .nav-cta{font-size:14px; font-weight:600; color:var(--bg); background:var(--gold); padding:9px 18px; border-radius:3px; text-decoration:none;}
+  h1{font-family:'Fraunces',serif; font-size:clamp(28px,4.5vw,40px); font-weight:600; margin:0 0 14px;}
+  .lead{font-size:15.5px; color:var(--paper-ink-soft); line-height:1.6; margin:0 0 44px; max-width:520px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.07em; text-transform:uppercase;
+    color:var(--gold-soft); display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  }
+  .eyebrow::before{content:""; width:14px; height:1px; background:var(--gold-soft);}
+  details{
+    background:var(--bg-panel); border:1px solid var(--line-dark); border-radius:8px;
+    padding:20px 24px; margin-bottom:12px;
+  }
+  summary{
+    font-family:'Fraunces',serif; font-size:17px; font-weight:600; cursor:pointer; list-style:none;
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"+"; color:var(--gold); font-size:22px; font-weight:400; flex-shrink:0;}
+  details[open] summary::after{content:"−";}
+  details p{font-size:14.5px; line-height:1.65; color:var(--paper-ink-soft); margin:14px 0 0;}
+  footer{border-top:1px solid var(--line-dark); padding-top:24px; margin-top:50px; font-size:12.5px; color:var(--paper-ink-soft); opacity:0.7; line-height:1.6;}
+  footer a{color:inherit;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="/" class="brand">Dag<span>Ett</span></a>
+    <a href="/app.html" class="nav-cta">Get your plan</a>
+  </header>
+
+  <div class="eyebrow">Frequently asked</div>
+  <h1>Questions people ask</h1>
+  <p class="lead">If something's not covered here, you can ask the AI directly once you're in the app — or reach out via the contact info in our terms.</p>
+
+  <details open>
+    <summary>What exactly do I get for 299 kr?</summary>
+    <p>A personalized 90-day plan built around your specific citizenship status, purpose for moving, and city — covering things like personnummer, BankID, bank account, and healthcare registration in the correct order. It also includes unlimited AI chat during your first 90 days to ask follow-up questions.</p>
+  </details>
+
+  <details>
+    <summary>Is the information accurate?</summary>
+    <p>We build the plan generator around official Migrationsverket and Skatteverket guidance and keep tightening it as we test more scenarios. That said, this is AI-generated general guidance, not legal advice — rules can change and every situation has its own details, so always confirm anything important on the official government sites before relying on it.</p>
+  </details>
+
+  <details>
+    <summary>What languages does it support?</summary>
+    <p>You can choose your preferred language when building your plan — including English, Svenska, العربية, Українська, हिन्दी, 中文, and dozens more. Official authority names (like Skatteverket or Migrationsverket) stay in Swedish since that's what you'll actually see on forms and letters.</p>
+  </details>
+
+  <details>
+    <summary>Do I need to pay again for the Ongoing Support tier?</summary>
+    <p>No — "Ongoing Support" is a separate optional add-on at 59 kr/month for people whose process runs longer than 90 days (multi-year visas, family reunification timelines). Most people only need the one-time plan.</p>
+  </details>
+
+  <details>
+    <summary>Is my information stored anywhere?</summary>
+    <p>No — your plan and chat history exist only in your browser during your session. We don't save your citizenship status, chat messages, or plan on our servers. See our <a href="/privacy.html" style="color:var(--gold-soft);">privacy policy</a> for details.</p>
+  </details>
+
+  <details>
+    <summary>Can I get a refund?</summary>
+    <p>If something genuinely went wrong on our end, yes — reach out within 14 days. Since this is general guidance rather than a guaranteed outcome, we can't refund simply because your personal situation turned out to need something different than the plan suggested.</p>
+  </details>
+
+  <details>
+    <summary>Is Dag Ett affiliated with the Swedish government?</summary>
+    <p>No. Dag Ett is an independent service, not affiliated with Migrationsverket, Skatteverket, Försäkringskassan, or any government agency.</p>
+  </details>
+
+  <footer>
+    <a href="/">Home</a> · <a href="/app.html">Get your plan</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
+  </footer>
+</div>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
